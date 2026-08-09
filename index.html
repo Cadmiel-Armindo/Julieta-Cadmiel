@@ -397,7 +397,17 @@ input:focus,select:focus{
 <script>
 const URL='https://dzvscfeypjoytajqxczs.supabase.co';
 const KEY='sb_publishable_Gxfls-Yl2krdF-4Xzbc_4A_XvRv0iNK';
-const db=supabase.createClient(URL,KEY);
+const db=(window.supabase&&window.supabase.createClient)?window.supabase.createClient(URL,KEY):null;
+const API=`${URL}/rest/v1`;
+async function apiFetch(path,options={}){
+  const headers={apikey:KEY,Authorization:`Bearer ${KEY}`,'Content-Type':'application/json',...(options.headers||{})};
+  const r=await fetch(API+path,{...options,headers});
+  const text=await r.text();
+  let data=null;
+  try{data=text?JSON.parse(text):null}catch{data=text}
+  if(!r.ok) throw new Error((data&&data.message)||`HTTP ${r.status}`);
+  return data;
+}
 
 let lists=[],tables=[],guests=[],active=null,user=null,searchSeq=0;
 const $=id=>document.getElementById(id);
@@ -411,18 +421,23 @@ async function init(){
   const params=new URLSearchParams(location.search);
   if(params.get('admin')==='1') $('adminEntry').classList.remove('hidden');
 
-  const {data,error}=await db.from('listas').select('*').eq('ativo',true).order('id');
-  if(error) return notice($('publicResult'),'Não foi possível carregar a lista.','error');
+  try{
+    const data=await apiFetch('/listas?select=*&ativo=eq.true&order=id.asc');
+    lists=data||[];
+    active=lists.find(x=>x.slug===params.get('lista'))||lists[0];
+  }catch(e){
+    console.error('Falha ao carregar lista pública:',e);
+    return notice($('publicResult'),'Não foi possível carregar a lista. Verifique a ligação à internet e tente novamente.','error');
+  }
 
-  lists=data||[];
-  active=lists.find(x=>x.slug===params.get('lista'))||lists[0];
-
-  db.auth.getSession().then(async({data})=>{
-    if(data.session){
-      user=data.session.user;
-      if(await isAdmin()) await admin();
-    }
-  });
+  if(db){
+    db.auth.getSession().then(async({data})=>{
+      if(data.session){
+        user=data.session.user;
+        if(await isAdmin()) await admin();
+      }
+    });
+  }
 }
 init();
 
@@ -439,18 +454,26 @@ async function searchGuest(){
   btn.textContent='A procurar o seu nome...';
   notice($('publicResult'),'A procurar o seu nome...');
 
-  const {data,error}=await db.rpc('buscar_convidado',{
-    p_lista_id:active.id,p_nome:nome,p_telefone:phone||null
-  });
+  let data;
+  try{
+    data=await apiFetch('/rpc/buscar_convidado',{
+      method:'POST',
+      body:JSON.stringify({
+        p_lista_id:active.id,
+        p_nome:nome,
+        p_telefone:phone||null
+      })
+    });
+  }catch(error){
+    console.error('Erro na pesquisa:',error);
+    btn.disabled=false;
+    btn.textContent='⌕   Procurar a minha mesa';
+    return notice($('publicResult'),'Não foi possível concluir a pesquisa. Verifique a internet e tente novamente.','error');
+  }
 
   btn.disabled=false;
   btn.textContent='⌕   Procurar a minha mesa';
   if(seq!==searchSeq) return;
-
-  if(error){
-    console.error(error);
-    return notice($('publicResult'),'Não foi possível concluir a pesquisa. Tente novamente.','error');
-  }
 
   if(data?.[0]?.requer_telefone){
     return notice($('publicResult'),'Existem convidados com o mesmo nome. Confirme o seu número de telefone e clique novamente em “Procurar a minha mesa”.');
@@ -480,6 +503,7 @@ function showAdminLogin(){openM('auth')}
 
 async function login(){
   notice($('authMsg'),'');
+  if(!db)return notice($('authMsg'),'O módulo administrativo não carregou. Atualize a página com internet ativa.','error');
   const {data,error}=await db.auth.signInWithPassword({
     email:$('email').value.trim(),password:$('password').value
   });
