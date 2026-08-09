@@ -3,196 +3,371 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6f1118">
 <title>Julieta & Cadmiel — Encontre a sua mesa</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#fbf6f0;--card:#fff;--ink:#382a25;--muted:#7d6d65;--gold:#9a6848;
-  --line:#ead9cc;--soft:#fff8f2;--danger:#a94442;--ok:#2f6b3b
+  --wine:#74131a;
+  --wine2:#5c0e14;
+  --gold:#c79a52;
+  --gold2:#a97838;
+  --cream:#fffaf4;
+  --cream2:#f7ede2;
+  --paper:#fffdfa;
+  --ink:#332720;
+  --muted:#796b63;
+  --line:#ead7c2;
+  --green:#2f7a45;
+  --greenbg:#eef8f0;
+  --danger:#a94442;
+  --shadow:0 14px 42px rgba(91,56,33,.11);
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{
-  margin:0;background:linear-gradient(135deg,#fffaf5,#f5ebe1);color:var(--ink);
-  font-family:Arial,sans-serif;min-height:100vh
+  margin:0;min-height:100vh;color:var(--ink);
+  background:
+    radial-gradient(circle at 8% 20%,rgba(199,154,82,.10),transparent 24%),
+    radial-gradient(circle at 92% 20%,rgba(199,154,82,.10),transparent 24%),
+    linear-gradient(135deg,#fffdf9,#f8efe5);
+  font-family:Arial,Helvetica,sans-serif;
 }
 button,input,select{font:inherit}
-button{cursor:pointer;border:0}
-.wrap{max-width:1050px;margin:auto;padding:22px 14px 50px}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.page{
+  width:min(1180px,100%);
+  margin:0 auto;
+  padding:20px 14px 50px;
+}
+.public-shell{position:relative}
+.floral{
+  position:fixed;z-index:-1;opacity:.26;font-size:155px;line-height:1;
+  filter:saturate(.7);pointer-events:none
+}
+.floral.left{left:-34px;top:180px;transform:rotate(-14deg)}
+.floral.right{right:-34px;top:200px;transform:scaleX(-1) rotate(-14deg)}
+.hero{text-align:center;padding:12px 12px 20px}
+.monogram{
+  color:var(--gold2);font:italic 50px Georgia,serif;line-height:1;margin-top:4px
+}
+.names{
+  margin:8px 0 5px;color:var(--wine);
+  font:700 clamp(35px,6vw,62px) Georgia,serif;
+  letter-spacing:2px
+}
+.gold-rule{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  color:var(--gold2);font-weight:700;margin:10px 0
+}
+.gold-rule:before,.gold-rule:after{content:"";width:70px;height:1px;background:var(--gold)}
+.hero h2{
+  color:var(--wine);font:700 clamp(30px,4.5vw,48px) Georgia,serif;
+  margin:13px 0 4px
+}
+.hero .intro{max-width:720px;margin:0 auto;color:#3f3a36;line-height:1.55}
+
 .card{
-  background:#fff;border:1px solid var(--line);border-radius:22px;
-  box-shadow:0 12px 35px #68482a12;padding:24px
+  background:rgba(255,253,250,.96);border:1px solid var(--line);
+  box-shadow:var(--shadow);border-radius:19px;padding:22px
 }
-.hero{text-align:center;max-width:650px;margin:35px auto;position:relative}
-.hero h1{font:38px Georgia,serif;color:#744b35;margin:8px 0}
-.hero p{color:var(--muted)}
-.divider{height:2px;width:75px;background:#c69c78;margin:22px auto}
-label{display:block;font-weight:700;margin:10px 0 6px}
+.search-card{max-width:760px;margin:0 auto}
+label{display:block;font-weight:700;margin:0 0 7px}
+.input-wrap{position:relative;margin-bottom:14px}
+.input-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--gold2);font-size:19px
+}
 input,select{
-  width:100%;padding:13px 14px;border:1px solid #d9c5b6;border-radius:12px;
-  background:#fff;outline:none
+  width:100%;border:1px solid #d9c8b9;background:#fff;
+  border-radius:10px;padding:14px 14px 14px 42px;color:var(--ink);outline:none
 }
-input:focus,select:focus{border-color:#a87554;box-shadow:0 0 0 3px #a8755418}
-.btn{padding:12px 16px;border-radius:11px;background:var(--gold);color:#fff;font-weight:700}
-.btn.secondary{background:#eee2d9;color:#5d4436}
-.btn.danger{background:var(--danger)}
-.btn.small{padding:8px 10px;font-size:13px}
-.result{margin-top:20px}
-.resultbox{
-  background:var(--soft);border:1px solid var(--line);border-radius:17px;
-  padding:22px;text-align:center;animation:appear .2s ease
+select{padding-left:14px}
+input:focus,select:focus{
+  border-color:var(--gold2);box-shadow:0 0 0 3px rgba(199,154,82,.12)
 }
-.guest{font-size:23px;font-weight:700}
-.mesa{
-  display:inline-block;margin:13px 0 5px;padding:10px 22px;border-radius:30px;
-  background:#895c3c;color:#fff;font-size:20px;font-weight:700
+.primary{
+  width:100%;border:0;border-radius:9px;padding:14px 18px;
+  background:linear-gradient(90deg,var(--wine),var(--wine2));
+  color:#fff;font-weight:800;font-size:18px;
+  box-shadow:0 8px 18px rgba(116,19,26,.18)
 }
-.cat{color:var(--muted)}
-.couple-note{margin:8px 0 2px;color:#6d5142;font-size:15px}
-.topbar{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap}
-.topbar h2{margin:0;font:27px Georgia,serif;color:#744b35}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
-.tab{padding:10px 14px;border-radius:10px;background:#eee2d9;color:#5d4436;font-weight:700}
-.tab.active{background:var(--gold);color:#fff}
-.list{display:grid;gap:8px}
+.primary:disabled{opacity:.65;cursor:wait}
+.privacy{
+  text-align:center;color:#514b46;font-size:13px;margin:11px 0 0
+}
+.result{max-width:760px;margin:18px auto 0}
+.result-card{
+  background:rgba(255,253,250,.98);border:1px solid var(--line);
+  border-radius:20px;padding:26px;box-shadow:var(--shadow);text-align:center;
+  animation:appear .22s ease
+}
+.hello{font:700 clamp(28px,4vw,39px) Georgia,serif;color:var(--wine);margin-bottom:8px}
+.couple-note{font-size:17px;margin-bottom:14px}
+.table-box{
+  display:inline-block;min-width:260px;padding:14px 28px;
+  border:2px solid #d9b16e;border-radius:13px;background:#fff9f0
+}
+.table-name{font:700 clamp(38px,6vw,58px) Georgia,serif;color:var(--wine)}
+.category{font-size:17px;margin-top:2px}
+.warm-note{margin:15px 0 2px;color:#51483f}
+.notice{
+  max-width:760px;margin:15px auto 0;padding:13px 15px;
+  border-radius:11px;background:#f7eee5;color:#6d5142;border:1px solid #ead9ca
+}
+.notice.error{background:#fff0ef;color:#8d3835;border-color:#efcecb}
+.notice.success{background:var(--greenbg);color:#315e3a;border-color:#b8dbbf}
+.admin-entry{
+  position:fixed;right:18px;top:18px;z-index:20;
+  width:43px;height:43px;border-radius:10px;border:1px solid #ddd;
+  background:#fff;color:#222;font-size:20px;box-shadow:0 5px 14px #0002
+}
+
+/* admin */
+.admin-shell{
+  min-height:calc(100vh - 40px);display:grid;grid-template-columns:220px 1fr;
+  background:#f6f7f8;border-radius:18px;overflow:hidden;box-shadow:var(--shadow)
+}
+.sidebar{
+  background:linear-gradient(180deg,#4d1115,#73131a);color:#fff;padding:20px 14px;
+  display:flex;flex-direction:column
+}
+.brand{font:24px Georgia,serif;color:#e8c78f;margin:4px 5px 22px}
+.navbtn{
+  border:0;background:transparent;color:#fff;text-align:left;padding:11px 12px;
+  border-radius:8px;margin:3px 0
+}
+.navbtn.active,.navbtn:hover{background:#ffffff17}
+.logout{margin-top:auto}
+.admin-main{padding:22px;overflow:auto}
+.admin-top{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px
+}
+.admin-top h2{margin:0;color:var(--wine);font:30px Georgia,serif}
+.stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px
+}
+.stat{
+  background:#fff;border:1px solid #ece7e2;border-radius:12px;padding:15px;
+  box-shadow:0 4px 14px #0000000c
+}
+.stat span{display:block;color:#68615c;font-size:12px}
+.stat strong{display:block;font-size:29px;margin-top:4px}
+.admin-panel{
+  background:#fff;border:1px solid #ece7e2;border-radius:13px;padding:16px;
+  margin-bottom:14px
+}
+.panel-title{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px
+}
+.panel-title h3{margin:0;color:#4a3c35}
+.smallbtn{
+  border:0;border-radius:8px;background:#eee6df;color:#563f32;padding:8px 11px;font-weight:700
+}
+.smallbtn.wine{background:var(--wine);color:#fff}
+.smallbtn.danger{background:#a94442;color:#fff}
+.filters{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:9px;margin-bottom:12px}
+.filters input{padding-left:14px}
+.rows{display:grid;gap:8px}
 .row{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  border:1px solid var(--line);border-radius:12px;padding:11px;background:#fff
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:11px;border:1px solid #ece7e2;border-radius:10px
 }
-.row-main{min-width:0}
-.row-main strong{display:block}
-.row-main span{font-size:13px;color:var(--muted)}
+.row strong{display:block}
+.meta{font-size:12px;color:#756e69;margin-top:3px}
+.badge{
+  display:inline-block;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800
+}
+.ok{background:#e7f5ea;color:#2e7a42}
+.wait{background:#f7eee5;color:#8b643f}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .modal{
-  position:fixed;inset:0;background:#0007;display:none;align-items:center;
-  justify-content:center;padding:18px;z-index:20
+  position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;
+  padding:18px;z-index:50
 }
 .modal.open{display:flex}
 .modalbox{
-  background:#fff;border-radius:20px;padding:22px;width:min(520px,100%);
-  max-height:90vh;overflow:auto
+  width:min(520px,100%);max-height:90vh;overflow:auto;background:#fff;
+  border-radius:17px;padding:21px
 }
-.hidden{display:none!important}
-.notice{padding:12px;border-radius:10px;background:#f6eee8;color:#684b3a;margin:12px 0}
-.error{background:#fff0ef;color:#8d3835}
-.success{background:#edf8ef;color:#34613d}
-.footer{text-align:center;color:#9a8980;font-size:13px;margin-top:22px}
-.admin-entry{
-  position:absolute;top:10px;right:10px;width:38px;height:38px;border-radius:50%;
-  background:#eee2d9;color:#5d4436;font-size:18px
+.modalbox h3{margin-top:0;color:var(--wine)}
+.modalbox input,.modalbox select{padding-left:14px;margin-bottom:11px}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.footer{text-align:center;color:#8e7d72;font-size:13px;margin-top:24px}
+
+@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(max-width:850px){
+  .admin-shell{grid-template-columns:1fr}
+  .sidebar{display:block}
+  .brand{margin-bottom:10px}
+  .logout{margin-top:10px}
+  .stats{grid-template-columns:repeat(2,1fr)}
 }
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0 18px}
-.stat{border:1px solid var(--line);border-radius:14px;padding:14px;background:#fffaf6}
-.stat strong{display:block;font-size:22px;color:#744b35}
-.stat span{font-size:12px;color:var(--muted)}
-.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:700}
-.badge.ok{background:#e8f6eb;color:var(--ok)}
-.badge.wait{background:#f6eee8;color:#7a5e50}
-@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-@media(max-width:700px){
-  .hero h1{font-size:32px}.row{align-items:flex-start;flex-direction:column}
-  .actions{width:100%}.stats{grid-template-columns:repeat(2,1fr)}
+@media(max-width:620px){
+  .page{padding:10px 10px 35px}
+  .search-card,.result-card{padding:18px}
+  .filters{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .row{align-items:flex-start;flex-direction:column}
+  .actions{width:100%}
+  .floral{font-size:100px;opacity:.18}
 }
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<section id="publicView">
-  <div class="card hero">
-    <button id="adminEntry" class="admin-entry hidden" title="Administrador" onclick="showAdminLogin()">⚙️</button>
-    <div style="font-size:42px">💍</div>
-    <h1 id="publicTitle">Julieta & Cadmiel</h1>
-    <p>Bem-vindo(a) ao nosso casamento</p>
-    <div class="divider"></div>
-    <p><strong>Digite o seu nome completo para encontrar a sua mesa.</strong></p>
+<div class="floral left">❀</div>
+<div class="floral right">❀</div>
 
-    <label>Nome do convidado</label>
-    <input id="nomeBusca" autocomplete="off" placeholder="Digite o seu nome completo...">
-    <button id="searchBtn" class="btn" style="width:100%;margin-top:12px" onclick="searchGuest()">🔎 Procurar a minha mesa</button>
+<div class="page">
 
-    <div id="phoneArea" class="hidden">
-      <label>WhatsApp / telefone</label>
-      <input id="telefoneBusca" inputmode="tel" placeholder="Ex.: +258 86...">
-      <p style="font-size:13px;color:var(--muted)">Este campo só aparece quando existem nomes iguais.</p>
+<section id="publicView" class="public-shell">
+  <button id="adminEntry" class="admin-entry hidden" title="Administrador" onclick="showAdminLogin()">⚙️</button>
+
+  <header class="hero">
+    <div class="monogram">J & C</div>
+    <h1 class="names">JULIETA & CADMIEL</h1>
+    <div class="gold-rule">♥</div>
+    <h2>Descubra a sua mesa</h2>
+    <p class="intro">Digite o seu nome completo e clique em <strong>“Procurar a minha mesa”</strong> para descobrir a mesa que os noivos reservaram para si.</p>
+  </header>
+
+  <div class="card search-card">
+    <label for="nomeBusca">Digite o seu nome completo</label>
+    <div class="input-wrap">
+      <span class="input-icon">♙</span>
+      <input id="nomeBusca" autocomplete="off" placeholder="Ex.: João da Silva">
     </div>
 
-    <div id="publicResult" class="result"></div>
-    <div class="footer">Com carinho, Julieta & Cadmiel ❤️</div>
+    <div id="phoneArea">
+      <label for="telefoneBusca">Número de WhatsApp / telefone</label>
+      <div class="input-wrap">
+        <span class="input-icon">☎</span>
+        <input id="telefoneBusca" inputmode="tel" autocomplete="tel" placeholder="Ex.: +258 86 000 0000">
+      </div>
+      <div class="privacy">Informe o número para receber a indicação da sua mesa por WhatsApp ou SMS.</div>
+    </div>
+
+    <button id="searchBtn" class="primary" onclick="searchGuest()">⌕ &nbsp; Procurar a minha mesa</button>
+    <div class="privacy">🔒 Os seus dados são usados apenas para localizar a sua mesa.</div>
   </div>
+
+  <div id="publicResult" class="result"></div>
+
+  <div class="footer">Com carinho, Julieta & Cadmiel ❤️</div>
 </section>
 
 <section id="adminView" class="hidden">
-  <div class="card">
-    <div class="topbar">
-      <h2>⚙️ Painel ADMINISTRADOR</h2>
-      <button class="btn secondary" onclick="logout()">Sair</button>
-    </div>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand">Julieta & Cadmiel</div>
+      <button class="navbtn active" data-target="dashboardPanel">⌂ &nbsp; Dashboard</button>
+      <button class="navbtn" data-target="listsPanel">☷ &nbsp; Listas</button>
+      <button class="navbtn" data-target="tablesPanel">▦ &nbsp; Mesas</button>
+      <button class="navbtn" data-target="guestsPanel">♙ &nbsp; Convidados</button>
+      <button class="navbtn" data-target="guestsPanel" data-presence="present">✓ &nbsp; Presenças</button>
+      <button class="navbtn logout" onclick="logout()">↪ &nbsp; Sair</button>
+    </aside>
 
-    <div id="adminMsg"></div>
+    <main class="admin-main">
+      <div class="admin-top">
+        <h2>Painel Administrativo</h2>
+        <span id="adminIdentity" class="meta"></span>
+      </div>
+      <div id="adminMsg"></div>
 
-    <div class="stats">
-      <div class="stat"><strong id="statTotal">0</strong><span>Total de convidados</span></div>
-      <div class="stat"><strong id="statPresentes">0</strong><span>Presenças registadas</span></div>
-      <div class="stat"><strong id="statPendentes">0</strong><span>Ainda não registados</span></div>
-      <div class="stat"><strong id="statMesas">0</strong><span>Total de mesas</span></div>
-    </div>
+      <div id="dashboardPanel" class="admin-section">
+        <div class="stats">
+          <div class="stat"><span>Total de Convidados</span><strong id="statTotal">0</strong></div>
+          <div class="stat"><span>Presentes / Confirmados</span><strong id="statPresentes">0</strong></div>
+          <div class="stat"><span>Ainda não registados</span><strong id="statPendentes">0</strong></div>
+          <div class="stat"><span>Total de Mesas</span><strong id="statMesas">0</strong></div>
+        </div>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="listsTab">📋 Listas</button>
-      <button class="tab" data-tab="tablesTab">🪑 Mesas</button>
-      <button class="tab" data-tab="guestsTab">👥 Convidados</button>
-    </div>
+        <div class="admin-panel">
+          <div class="panel-title"><h3>Presenças recentes</h3></div>
+          <div id="recentList" class="rows"></div>
+        </div>
 
-    <div id="listsTab">
-      <div class="topbar"><h3>Listas</h3><button class="btn" onclick="openList()">+ Nova lista</button></div>
-      <div id="listsList" class="list"></div>
-    </div>
+        <div class="admin-panel">
+          <div class="panel-title"><h3>Lista rápida de convidados</h3></div>
+          <div id="quickGuests" class="rows"></div>
+        </div>
+      </div>
 
-    <div id="tablesTab" class="hidden">
-      <div class="topbar"><h3>Mesas</h3><button class="btn" onclick="openTable()">+ Nova mesa</button></div>
-      <label>Lista</label>
-      <select id="tableList"></select>
-      <div id="tablesList" class="list" style="margin-top:12px"></div>
-    </div>
+      <div id="listsPanel" class="admin-section hidden">
+        <div class="admin-panel">
+          <div class="panel-title">
+            <h3>Listas</h3>
+            <button class="smallbtn wine" onclick="openList()">+ Nova Lista</button>
+          </div>
+          <div id="listsList" class="rows"></div>
+        </div>
+      </div>
 
-    <div id="guestsTab" class="hidden">
-      <div class="topbar"><h3>Convidados</h3><button class="btn" onclick="openGuest()">+ Novo convidado</button></div>
-      <label>Lista</label>
-      <select id="guestList"></select>
-      <input id="filter" placeholder="Pesquisar nome ou WhatsApp..." style="margin:10px 0">
-      <select id="presenceFilter" style="margin-bottom:10px">
-        <option value="">Todos</option>
-        <option value="present">Presença registada</option>
-        <option value="pending">Ainda não registada</option>
-      </select>
-      <div id="guestsList" class="list"></div>
-    </div>
+      <div id="tablesPanel" class="admin-section hidden">
+        <div class="admin-panel">
+          <div class="panel-title">
+            <h3>Mesas</h3>
+            <button class="smallbtn wine" onclick="openTable()">+ Nova Mesa</button>
+          </div>
+          <label>Lista</label>
+          <select id="tableList"></select>
+          <div id="tablesList" class="rows" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <div id="guestsPanel" class="admin-section hidden">
+        <div class="admin-panel">
+          <div class="panel-title">
+            <h3>Convidados</h3>
+            <button class="smallbtn wine" onclick="openGuest()">+ Novo Convidado</button>
+          </div>
+          <label>Lista</label>
+          <select id="guestList"></select>
+          <div class="filters" style="margin-top:10px">
+            <input id="filter" placeholder="Pesquisar convidado...">
+            <select id="presenceFilter">
+              <option value="">Todos os estados</option>
+              <option value="present">Presença registada</option>
+              <option value="pending">Ainda não registada</option>
+            </select>
+            <select id="tableFilter">
+              <option value="">Todas as mesas</option>
+            </select>
+          </div>
+          <div id="guestsList" class="rows"></div>
+        </div>
+      </div>
+    </main>
   </div>
 </section>
+
 </div>
 
-<div id="auth" class="modal">
-  <div class="modalbox">
-    <h3>🔐 Administrador</h3>
-    <label>Email</label>
-    <input id="email" type="email">
-    <label>Senha</label>
-    <input id="password" type="password">
-    <div id="authMsg"></div>
-    <div class="actions" style="margin-top:14px">
-      <button class="btn" onclick="login()">Entrar</button>
-      <button class="btn secondary" onclick="closeM('auth')">Cancelar</button>
-    </div>
+<div id="auth" class="modal"><div class="modalbox">
+  <h3>🔐 Administrador</h3>
+  <label>Email</label><input id="email" type="email" autocomplete="username">
+  <label>Senha</label><input id="password" type="password" autocomplete="current-password">
+  <div id="authMsg"></div>
+  <div class="modal-actions">
+    <button class="smallbtn wine" onclick="login()">Entrar</button>
+    <button class="smallbtn" onclick="closeM('auth')">Cancelar</button>
   </div>
-</div>
+</div></div>
 
 <div id="listM" class="modal"><div class="modalbox">
   <h3>Lista</h3><input id="lid" type="hidden">
   <label>Nome</label><input id="lname">
   <label>Descrição</label><input id="ldesc">
   <label>Slug</label><input id="lslug">
-  <label><input id="lactive" type="checkbox" checked style="width:auto"> Ativa</label>
-  <div class="actions"><button class="btn" onclick="saveList()">Guardar</button><button class="btn secondary" onclick="closeM('listM')">Cancelar</button></div>
+  <label><input id="lactive" type="checkbox" checked style="width:auto;margin-right:7px"> Ativa</label>
+  <div class="modal-actions">
+    <button class="smallbtn wine" onclick="saveList()">Guardar</button>
+    <button class="smallbtn" onclick="closeM('listM')">Cancelar</button>
+  </div>
 </div></div>
 
 <div id="tableM" class="modal"><div class="modalbox">
@@ -201,7 +376,10 @@ input:focus,select:focus{border-color:#a87554;box-shadow:0 0 0 3px #a8755418}
   <label>Nome da mesa</label><input id="tname">
   <label>Categoria</label><input id="tcat">
   <label>Ordem</label><input id="torder" type="number" value="1">
-  <div class="actions"><button class="btn" onclick="saveTable()">Guardar</button><button class="btn secondary" onclick="closeM('tableM')">Cancelar</button></div>
+  <div class="modal-actions">
+    <button class="smallbtn wine" onclick="saveTable()">Guardar</button>
+    <button class="smallbtn" onclick="closeM('tableM')">Cancelar</button>
+  </div>
 </div></div>
 
 <div id="guestM" class="modal"><div class="modalbox">
@@ -210,7 +388,10 @@ input:focus,select:focus{border-color:#a87554;box-shadow:0 0 0 3px #a8755418}
   <label>Nome</label><input id="gname">
   <label>WhatsApp / telefone</label><input id="gphone">
   <label>Mesa</label><select id="gtable"></select>
-  <div class="actions"><button class="btn" onclick="saveGuest()">Guardar</button><button class="btn secondary" onclick="closeM('guestM')">Cancelar</button></div>
+  <div class="modal-actions">
+    <button class="smallbtn wine" onclick="saveGuest()">Guardar</button>
+    <button class="smallbtn" onclick="closeM('guestM')">Cancelar</button>
+  </div>
 </div></div>
 
 <script>
@@ -219,58 +400,61 @@ const KEY='sb_publishable_Gxfls-Yl2krdF-4Xzbc_4A_XvRv0iNK';
 const db=supabase.createClient(URL,KEY);
 
 let lists=[],tables=[],guests=[],active=null,user=null,searchSeq=0;
-const $=x=>document.getElementById(x);
-const esc=x=>String(x??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const slug=x=>x.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-function closeM(x){$(x).classList.remove('open')}
-function openM(x){$(x).classList.add('open')}
-function notice(el,t,c='notice'){el.innerHTML=t?`<div class="notice ${c}">${esc(t)}</div>`:''}
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const slug=v=>v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+function openM(id){$(id).classList.add('open')}
+function closeM(id){$(id).classList.remove('open')}
+function notice(el,text,type=''){el.innerHTML=text?`<div class="notice ${type}">${esc(text)}</div>`:''}
 
 async function init(){
-  if(new URLSearchParams(location.search).get('admin')==='1') $('adminEntry').classList.remove('hidden');
+  const params=new URLSearchParams(location.search);
+  if(params.get('admin')==='1') $('adminEntry').classList.remove('hidden');
 
   const {data,error}=await db.from('listas').select('*').eq('ativo',true).order('id');
   if(error) return notice($('publicResult'),'Não foi possível carregar a lista.','error');
+
   lists=data||[];
-  active=lists.find(x=>x.slug===new URLSearchParams(location.search).get('lista'))||lists[0];
-  if(active) $('publicTitle').textContent=active.nome||'Julieta & Cadmiel';
+  active=lists.find(x=>x.slug===params.get('lista'))||lists[0];
+
+  db.auth.getSession().then(async({data})=>{
+    if(data.session){
+      user=data.session.user;
+      if(await isAdmin()) await admin();
+    }
+  });
 }
+init();
 
 async function searchGuest(){
   const seq=++searchSeq;
   const nome=$('nomeBusca').value.trim();
   const phone=$('telefoneBusca').value.trim();
 
-  if(nome.length<3){
-    return notice($('publicResult'),'Por favor, escreva o seu nome completo.');
-  }
-  if(!active){
-    return notice($('publicResult'),'A lista do casamento não está disponível neste momento.','error');
-  }
+  if(nome.length<3) return notice($('publicResult'),'Por favor, escreva o seu nome completo.');
+  if(!active) return notice($('publicResult'),'A lista do casamento não está disponível neste momento.','error');
 
   const btn=$('searchBtn');
   btn.disabled=true;
-  btn.textContent='A procurar...';
+  btn.textContent='A procurar o seu nome...';
   notice($('publicResult'),'A procurar o seu nome...');
 
   const {data,error}=await db.rpc('buscar_convidado',{
-    p_lista_id:active.id,
-    p_nome:nome,
-    p_telefone:phone||null
+    p_lista_id:active.id,p_nome:nome,p_telefone:phone||null
   });
 
   btn.disabled=false;
-  btn.textContent='🔎 Procurar a minha mesa';
-
+  btn.textContent='⌕   Procurar a minha mesa';
   if(seq!==searchSeq) return;
-  if(error) return notice($('publicResult'),'Não foi possível concluir a pesquisa. Tente novamente.','error');
 
-  if(data?.[0]?.requer_telefone){
-    $('phoneArea').classList.remove('hidden');
-    return notice($('publicResult'),'Encontrámos mais de uma pessoa com esse nome. Informe o seu WhatsApp ou telefone e clique novamente em “Procurar a minha mesa”.');
+  if(error){
+    console.error(error);
+    return notice($('publicResult'),'Não foi possível concluir a pesquisa. Tente novamente.','error');
   }
 
-  $('phoneArea').classList.add('hidden');
+  if(data?.[0]?.requer_telefone){
+    return notice($('publicResult'),'Existem convidados com o mesmo nome. Confirme o seu número de telefone e clique novamente em “Procurar a minha mesa”.');
+  }
 
   if(!data?.length){
     return notice($('publicResult'),'Não conseguimos encontrar este nome na lista. Confirme se escreveu o seu nome completo corretamente ou procure um membro da organização.');
@@ -278,47 +462,46 @@ async function searchGuest(){
 
   const r=data[0];
   $('publicResult').innerHTML=`
-    <div class="resultbox">
-      <div class="guest">${esc(r.nome)}</div>
-      <div class="couple-note">Os noivos Julieta & Cadmiel reservaram para si:</div>
-      <div class="mesa">🎉 ${esc(r.mesa_nome)}</div>
-      <div class="cat">${esc(r.categoria||'')}</div>
+    <div class="result-card">
+      <div class="hello">Olá, ${esc(r.nome)}! 👋</div>
+      <div class="couple-note">Os noivos <strong>Julieta & Cadmiel</strong> informam a sua mesa:</div>
+      <div class="table-box">
+        <div class="table-name">${esc(r.mesa_nome)}</div>
+        <div class="category">${esc(r.categoria||'')}</div>
+      </div>
+      <div class="warm-note">Será um prazer celebrar este momento consigo. ❤️</div>
     </div>`;
 }
 
-$('nomeBusca').addEventListener('keydown',e=>{
-  if(e.key==='Enter') searchGuest();
-});
-$('telefoneBusca').addEventListener('keydown',e=>{
-  if(e.key==='Enter') searchGuest();
-});
+$('nomeBusca').addEventListener('keydown',e=>{if(e.key==='Enter')searchGuest()});
+$('telefoneBusca').addEventListener('keydown',e=>{if(e.key==='Enter')searchGuest()});
 
 function showAdminLogin(){openM('auth')}
+
 async function login(){
   notice($('authMsg'),'');
   const {data,error}=await db.auth.signInWithPassword({
-    email:$('email').value.trim(),
-    password:$('password').value
+    email:$('email').value.trim(),password:$('password').value
   });
-  if(error) return notice($('authMsg'),'Não foi possível entrar. Verifique os dados.','error');
+  if(error)return notice($('authMsg'),'Não foi possível entrar. Verifique o email e a senha.','error');
   user=data.user;
   await admin();
 }
 async function isAdmin(){
-  if(!user) return false;
+  if(!user)return false;
   const {data}=await db.from('admin_users').select('user_id').eq('user_id',user.id).maybeSingle();
   return !!data;
 }
 async function admin(){
-  if(!await isAdmin()) return notice($('authMsg'),'Este utilizador não tem acesso administrativo.','error');
+  if(!await isAdmin())return notice($('authMsg'),'Este utilizador não tem acesso administrativo.','error');
   closeM('auth');
   $('publicView').classList.add('hidden');
   $('adminView').classList.remove('hidden');
+  $('adminIdentity').textContent=user?.email||'Administrador';
   await refresh();
 }
 async function logout(){
-  await db.auth.signOut();
-  user=null;
+  await db.auth.signOut();user=null;
   $('adminView').classList.add('hidden');
   $('publicView').classList.remove('hidden');
 }
@@ -326,169 +509,195 @@ async function logout(){
 async function refresh(){
   const {data}=await db.from('listas').select('*').order('id');
   lists=data||[];
-  active=active&&lists.find(x=>x.id===active.id)||lists[0];
+  active=(active&&lists.find(x=>x.id===active.id))||lists[0];
   renderLists();
-  fill();
+  fillListSelectors();
   await loadTables();
   await loadGuests();
-  renderStats();
+  renderDashboard();
 }
-function renderLists(){
-  $('listsList').innerHTML=lists.map(l=>`
-    <div class="row">
-      <div class="row-main">
-        <strong>${esc(l.nome)}</strong>
-        <span>${esc(l.descricao||'')} · ${l.ativo?'Ativa':'Inativa'} · ${esc(l.slug||'')}</span>
-      </div>
-      <div class="actions">
-        <button class="btn small secondary" onclick="editList(${l.id})">Editar</button>
-        <button class="btn small danger" onclick="delList(${l.id})">Remover</button>
-      </div>
-    </div>`).join('')||'<div class="notice">Nenhuma lista.</div>';
-}
-function fill(){
-  const o=lists.map(l=>`<option value="${l.id}">${esc(l.nome)}</option>`).join('');
-  ['tableList','guestList','tlist','glist'].forEach(id=>$(id).innerHTML=o);
+
+function fillListSelectors(){
+  const options=lists.map(l=>`<option value="${l.id}">${esc(l.nome)}</option>`).join('');
+  ['tableList','guestList','tlist','glist'].forEach(id=>$(id).innerHTML=options);
   if(active){
     $('tableList').value=active.id;$('guestList').value=active.id;
     $('tlist').value=active.id;$('glist').value=active.id
   }
-  $('tableList').onchange=()=>{active=lists.find(x=>x.id==$('tableList').value);loadTables().then(renderStats)};
-  $('guestList').onchange=()=>{active=lists.find(x=>x.id==$('guestList').value);loadGuests().then(renderStats)};
+  $('tableList').onchange=async()=>{active=lists.find(x=>x.id==$('tableList').value);await loadTables();renderDashboard()};
+  $('guestList').onchange=async()=>{active=lists.find(x=>x.id==$('guestList').value);await loadTables();await loadGuests();renderDashboard()};
   $('glist').onchange=fillGuestTables;
 }
+function renderLists(){
+  $('listsList').innerHTML=lists.map(l=>`
+    <div class="row"><div>
+      <strong>${esc(l.nome)}</strong>
+      <div class="meta">${esc(l.descricao||'')} · ${l.ativo?'Ativa':'Inativa'} · ${esc(l.slug||'')}</div>
+    </div><div class="actions">
+      <button class="smallbtn" onclick="editList(${l.id})">Editar</button>
+      <button class="smallbtn danger" onclick="delList(${l.id})">Remover</button>
+    </div></div>`).join('')||'<div class="notice">Nenhuma lista.</div>';
+}
+
 async function loadTables(){
-  if(!active)return;
+  if(!active){tables=[];return}
   const {data}=await db.from('mesas').select('*').eq('lista_id',active.id).order('ordem').order('id');
   tables=data||[];
   $('tablesList').innerHTML=tables.map(t=>`
-    <div class="row"><div class="row-main">
-      <strong>${esc(t.nome)}</strong><span>${esc(t.categoria||'')} · ordem ${t.ordem||1}</span>
-    </div><div class="actions">
-      <button class="btn small secondary" onclick="editTable(${t.id})">Editar</button>
-      <button class="btn small danger" onclick="delTable(${t.id})">Remover</button>
+    <div class="row"><div><strong>${esc(t.nome)}</strong>
+    <div class="meta">${esc(t.categoria||'')} · ordem ${t.ordem||1}</div></div>
+    <div class="actions">
+      <button class="smallbtn" onclick="editTable(${t.id})">Editar</button>
+      <button class="smallbtn danger" onclick="delTable(${t.id})">Remover</button>
     </div></div>`).join('')||'<div class="notice">Nenhuma mesa.</div>';
+
+  $('tableFilter').innerHTML='<option value="">Todas as mesas</option>'+
+    tables.map(t=>`<option value="${t.id}">${esc(t.nome)}</option>`).join('');
 }
+
 async function loadGuests(){
-  if(!active)return;
-  const {data}=await db.from('convidados')
-    .select('id,nome,telefone,mesa_id,lista_id,presente,confirmado_em,origem_confirmacao,ultimo_acesso,mesas(nome)')
+  if(!active){guests=[];return}
+  const {data,error}=await db.from('convidados')
+    .select('id,nome,telefone,mesa_id,lista_id,presente,confirmado_em,origem_confirmacao,ultimo_acesso,mesas(nome,categoria)')
     .eq('lista_id',active.id).order('nome');
+  if(error){console.error(error);guests=[];return}
   guests=data||[];
   renderGuests();
 }
+
+function statusHtml(g){
+  return g.presente
+    ? '<span class="badge ok">✓ Presença registada</span>'
+    : '<span class="badge wait">○ Ainda não registada</span>';
+}
 function renderGuests(){
-  const f=$('filter').value.toLowerCase();
-  const pf=$('presenceFilter').value;
-  const shown=guests.filter(g=>{
-    const text=(g.nome+' '+(g.telefone||'')).toLowerCase();
-    if(!text.includes(f)) return false;
-    if(pf==='present' && !g.presente) return false;
-    if(pf==='pending' && g.presente) return false;
+  const text=$('filter').value.trim().toLowerCase();
+  const state=$('presenceFilter').value;
+  const table=$('tableFilter').value;
+
+  const filtered=guests.filter(g=>{
+    if(text && !(g.nome+' '+(g.telefone||'')).toLowerCase().includes(text))return false;
+    if(state==='present'&&!g.presente)return false;
+    if(state==='pending'&&g.presente)return false;
+    if(table && String(g.mesa_id)!==table)return false;
     return true;
   });
 
-  $('guestsList').innerHTML=shown.map(g=>{
-    const status=g.presente
-      ? `<span class="badge ok">✓ Presença registada</span>`
-      : `<span class="badge wait">○ Ainda não registada</span>`;
-    const when=g.confirmado_em ? ` · ${new Date(g.confirmado_em).toLocaleString('pt-PT')}` : '';
-    return `<div class="row">
-      <div class="row-main">
-        <strong>${esc(g.nome)}</strong>
-        <span>📱 ${esc(g.telefone||'Sem telefone')} · 🪑 ${esc(g.mesas?.nome||'Sem mesa')} · ${status}${when}</span>
-      </div>
-      <div class="actions">
-        <button class="btn small secondary" onclick="editGuest(${g.id})">Editar</button>
-        <button class="btn small danger" onclick="delGuest(${g.id})">Remover</button>
-      </div>
-    </div>`;
-  }).join('')||'<div class="notice">Nenhum convidado encontrado.</div>';
+  $('guestsList').innerHTML=filtered.map(g=>`
+    <div class="row"><div>
+      <strong>${esc(g.nome)}</strong>
+      <div class="meta">📱 ${esc(g.telefone||'Sem telefone')} · 🪑 ${esc(g.mesas?.nome||'Sem mesa')} · ${statusHtml(g)}
+      ${g.confirmado_em?' · '+new Date(g.confirmado_em).toLocaleString('pt-PT'):''}</div>
+    </div><div class="actions">
+      <button class="smallbtn" onclick="editGuest(${g.id})">Editar</button>
+      <button class="smallbtn danger" onclick="delGuest(${g.id})">Remover</button>
+    </div></div>`).join('')||'<div class="notice">Nenhum convidado encontrado.</div>';
 }
 $('filter').oninput=renderGuests;
 $('presenceFilter').onchange=renderGuests;
+$('tableFilter').onchange=renderGuests;
 
-function renderStats(){
+function renderDashboard(){
   const total=guests.length;
-  const presentes=guests.filter(g=>g.presente).length;
+  const present=guests.filter(g=>g.presente).length;
   $('statTotal').textContent=total;
-  $('statPresentes').textContent=presentes;
-  $('statPendentes').textContent=Math.max(0,total-presentes);
+  $('statPresentes').textContent=present;
+  $('statPendentes').textContent=total-present;
   $('statMesas').textContent=tables.length;
+
+  const recent=guests.filter(g=>g.presente&&g.confirmado_em)
+    .sort((a,b)=>new Date(b.confirmado_em)-new Date(a.confirmado_em)).slice(0,6);
+  $('recentList').innerHTML=recent.map(g=>`
+    <div class="row"><div><strong>${esc(g.nome)}</strong>
+    <div class="meta">${esc(g.mesas?.nome||'Sem mesa')} · ${new Date(g.confirmado_em).toLocaleString('pt-PT')} · ${esc(g.origem_confirmacao||'QR Code')}</div>
+    </div>${statusHtml(g)}</div>`).join('')||'<div class="notice">Ainda não existem presenças registadas.</div>';
+
+  $('quickGuests').innerHTML=guests.slice(0,8).map(g=>`
+    <div class="row"><div><strong>${esc(g.nome)}</strong>
+    <div class="meta">${esc(g.mesas?.nome||'Sem mesa')} · ${statusHtml(g)}</div></div></div>`).join('');
 }
+
+document.querySelectorAll('.navbtn[data-target]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.admin-section').forEach(s=>s.classList.add('hidden'));
+    $(btn.dataset.target).classList.remove('hidden');
+    if(btn.dataset.presence){
+      $('presenceFilter').value=btn.dataset.presence;
+      renderGuests();
+    }
+  });
+});
 
 function openList(){
-  $('lid').value='';$('lname').value='';$('ldesc').value='';$('lslug').value='';$('lactive').checked=true;openM('listM')
+  $('lid').value='';$('lname').value='';$('ldesc').value='';$('lslug').value='';
+  $('lactive').checked=true;openM('listM')
 }
 function editList(id){
-  let l=lists.find(x=>x.id===id);
-  $('lid').value=l.id;$('lname').value=l.nome;$('ldesc').value=l.descricao||'';$('lslug').value=l.slug||'';$('lactive').checked=l.ativo;openM('listM')
+  const l=lists.find(x=>x.id===id);if(!l)return;
+  $('lid').value=l.id;$('lname').value=l.nome;$('ldesc').value=l.descricao||'';
+  $('lslug').value=l.slug||'';$('lactive').checked=l.ativo;openM('listM')
 }
 async function saveList(){
-  let id=$('lid').value,p={nome:$('lname').value.trim(),descricao:$('ldesc').value.trim(),slug:slug($('lslug').value||$('lname').value),ativo:$('lactive').checked};
-  let r=id?await db.from('listas').update(p).eq('id',id):await db.from('listas').insert(p);
+  const id=$('lid').value;
+  const p={nome:$('lname').value.trim(),descricao:$('ldesc').value.trim(),slug:slug($('lslug').value||$('lname').value),ativo:$('lactive').checked};
+  const r=id?await db.from('listas').update(p).eq('id',id):await db.from('listas').insert(p);
   if(r.error)return alert(r.error.message);closeM('listM');refresh()
 }
 async function delList(id){
   if(!confirm('Remover esta lista?'))return;
-  let r=await db.from('listas').delete().eq('id',id);
+  const r=await db.from('listas').delete().eq('id',id);
   if(r.error)alert(r.error.message);else refresh()
 }
+
 function openTable(){
-  $('tid').value='';$('tlist').value=active?.id||'';$('tname').value='';$('tcat').value='';$('torder').value=tables.length+1;openM('tableM')
+  $('tid').value='';$('tlist').value=active?.id||'';$('tname').value='';
+  $('tcat').value='';$('torder').value=tables.length+1;openM('tableM')
 }
 function editTable(id){
-  let t=tables.find(x=>x.id===id);
-  $('tid').value=t.id;$('tlist').value=t.lista_id;$('tname').value=t.nome;$('tcat').value=t.categoria||'';$('torder').value=t.ordem||1;openM('tableM')
+  const t=tables.find(x=>x.id===id);if(!t)return;
+  $('tid').value=t.id;$('tlist').value=t.lista_id;$('tname').value=t.nome;
+  $('tcat').value=t.categoria||'';$('torder').value=t.ordem||1;openM('tableM')
 }
 async function saveTable(){
-  let id=$('tid').value,p={lista_id:+$('tlist').value,nome:$('tname').value.trim(),categoria:$('tcat').value.trim(),ordem:+$('torder').value||1};
-  let r=id?await db.from('mesas').update(p).eq('id',id):await db.from('mesas').insert(p);
+  const id=$('tid').value;
+  const p={lista_id:+$('tlist').value,nome:$('tname').value.trim(),categoria:$('tcat').value.trim(),ordem:+$('torder').value||1};
+  const r=id?await db.from('mesas').update(p).eq('id',id):await db.from('mesas').insert(p);
   if(r.error)return alert(r.error.message);closeM('tableM');refresh()
 }
 async function delTable(id){
   if(!confirm('Remover esta mesa?'))return;
-  let r=await db.from('mesas').delete().eq('id',id);
+  const r=await db.from('mesas').delete().eq('id',id);
   if(r.error)alert(r.error.message);else refresh()
 }
+
 async function fillGuestTables(){
   const {data}=await db.from('mesas').select('*').eq('lista_id',+$('glist').value).order('ordem');
-  tables=data||[];
-  $('gtable').innerHTML=tables.map(t=>`<option value="${t.id}">${esc(t.nome)} — ${esc(t.categoria||'')}</option>`).join('')||'<option value="">Sem mesas</option>'
+  const opts=(data||[]).map(t=>`<option value="${t.id}">${esc(t.nome)} — ${esc(t.categoria||'')}</option>`).join('');
+  $('gtable').innerHTML=opts||'<option value="">Sem mesas</option>'
 }
 async function openGuest(){
-  $('gid').value='';$('glist').value=active?.id||'';await fillGuestTables();$('gname').value='';$('gphone').value='';openM('guestM')
+  $('gid').value='';$('glist').value=active?.id||'';await fillGuestTables();
+  $('gname').value='';$('gphone').value='';openM('guestM')
 }
 async function editGuest(id){
-  let g=guests.find(x=>x.id===id);
-  $('gid').value=g.id;$('glist').value=g.lista_id;await fillGuestTables();$('gtable').value=g.mesa_id;$('gname').value=g.nome;$('gphone').value=g.telefone||'';openM('guestM')
+  const g=guests.find(x=>x.id===id);if(!g)return;
+  $('gid').value=g.id;$('glist').value=g.lista_id;await fillGuestTables();
+  $('gtable').value=g.mesa_id;$('gname').value=g.nome;$('gphone').value=g.telefone||'';openM('guestM')
 }
 async function saveGuest(){
-  let id=$('gid').value,p={lista_id:+$('glist').value,nome:$('gname').value.trim(),telefone:$('gphone').value.trim()||null,mesa_id:+$('gtable').value||null};
+  const id=$('gid').value;
+  const p={lista_id:+$('glist').value,nome:$('gname').value.trim(),telefone:$('gphone').value.trim()||null,mesa_id:+$('gtable').value||null};
   if(!p.nome)return alert('Informe o nome.');
-  let r=id?await db.from('convidados').update(p).eq('id',id):await db.from('convidados').insert(p);
+  const r=id?await db.from('convidados').update(p).eq('id',id):await db.from('convidados').insert(p);
   if(r.error)return alert(r.error.message);closeM('guestM');refresh()
 }
 async function delGuest(id){
   if(!confirm('Remover este convidado?'))return;
-  let r=await db.from('convidados').delete().eq('id',id);
+  const r=await db.from('convidados').delete().eq('id',id);
   if(r.error)alert(r.error.message);else refresh()
 }
-
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  ['listsTab','tablesTab','guestsTab'].forEach(x=>$(x).classList.add('hidden'));
-  b.classList.add('active');$(b.dataset.tab).classList.remove('hidden')
-});
-
-db.auth.getSession().then(async({data})=>{
-  if(data.session){
-    user=data.session.user;
-    if(await isAdmin()) admin();
-  }
-});
-
-init();
 </script>
 </body>
 </html>
