@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Julieta & Cadmiel — Encontre a sua mesa</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #fff8f0, #f8eee5);
+      color: #3b2a25;
+      display: flex;
+      justify-content: center;
+      padding: 25px 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 24px;
+      padding: 35px 25px;
+      box-shadow: 0 10px 35px rgba(80, 50, 30, 0.12);
+    }
+
+    .rings {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, serif;
+      font-size: 38px;
+      color: #7b4b35;
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #7b6a62;
+    }
+
+    .divider {
+      width: 80px;
+      height: 2px;
+      background: #c69c78;
+      margin: 25px auto;
+    }
+
+    .search-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px 18px;
+      border: 2px solid #dec9ba;
+      border-radius: 14px;
+      font-size: 17px;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus {
+      border-color: #a87554;
+      box-shadow: 0 0 0 3px rgba(168, 117, 84, 0.12);
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: #8a7770;
+      font-size: 14px;
+    }
+
+    #resultado {
+      margin-top: 25px;
+    }
+
+    .result-card {
+      background: #fff8f2;
+      border: 1px solid #ead7c8;
+      border-radius: 18px;
+      padding: 22px;
+      animation: aparecer 0.25s ease;
+    }
+
+    .guest-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: #67402f;
+      margin-bottom: 12px;
+    }
+
+    .mesa {
+      display: inline-block;
+      background: #8b5e3c;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .categoria {
+      margin-top: 12px;
+      color: #7d6a60;
+      font-size: 15px;
+    }
+
+    .not-found {
+      color: #8b5e3c;
+      font-size: 17px;
+      padding: 15px;
+    }
+
+    .footer {
+      margin-top: 25px;
+      color: #9a8980;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    @keyframes aparecer {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 28px 18px;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .guest-name {
+        font-size: 21px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+
+      <div class="rings">💍</div>
+
+      <h1>Julieta & Cadmiel</h1>
+
+      <div class="subtitle">
+        Bem-vindo ao nosso casamento
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="search-title">
+        Encontre a sua mesa
+      </div>
+
+      <input
+        type="text"
+        id="pesquisa"
+        placeholder="🔎 Digite o seu nome..."
+        autocomplete="off"
+      >
+
+      <div class="hint">
+        Digite o seu nome para descobrir onde se sentará.
+      </div>
+
+      <div id="resultado"></div>
+
+      <div class="footer">
+        Com carinho, Julieta & Cadmiel ❤️
+      </div>
+
+    </div>
+  </div>
+
+<script>
+
+const convidados = [
+
+  // MESA 1 — Família do 1º Grau
+  {nome:"Mana Gotita", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Cunha Maulana", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Tio Horácio", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Mãe Horácio", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Daniel Marcos", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Tio Iko", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Mãe Beth", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Inocência", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Sheila", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Liana", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Lair", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Lucinha Silvério", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Titinha", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+  {nome:"Safir", mesa:"Mesa 1", categoria:"Família do 1º Grau"},
+
+  // MESA 2 — Família do 2º Grau
+  {nome:"Tio Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Nércia Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Muldy Nércia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Hequídio Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Yara Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Ilka Atuaia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Tio Cristóvão", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Cristóvão", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Tio Luís", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Luís", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Pai Painia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Painia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Ezequiel Painia", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Sherifa Almeida", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Marido de Sherifa", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Pai Chicuama", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Chicuama", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mario Patala", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Esposa de Tio Mario Patala", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Pastor Sinésio", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Mãe Sinésio", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+  {nome:"Raquel Oliveira", mesa:"Mesa 2", categoria:"Família do 2º Grau"},
+
+  // MESA 3 — Damos
+  {nome:"Abel", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Sheila Abel", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Albuquerque de Jesus", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Sofia Albuquerque", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Gil João", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Carmen Gil", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Natalino Frank", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Zalia Natalino", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Sinésio Jr.", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Crismina Sinésio", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Amido Sinésio", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Mulher de Amido", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Kaleby", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Cunha Yasmin", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Paulo Jassula", mesa:"Mesa 3", categoria:"Damos"},
+  {nome:"Mulher de Paulo", mesa:"Mesa 3", categoria:"Damos"},
+
+  // MESA 4 — Igreja
+  {nome:"Apostolo James", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe apostolo", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mae Caniacha", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Ruth Caniacha", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pastor Gabriel", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Gabriel", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Muchine", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Muchine", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Jacinta", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Jacinta", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Nini", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Nini", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Afonso", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Afonso", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Fungai", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Fungai", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Pai Sofrino", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Sofrino", mesa:"Mesa 4", categoria:"Igreja"},
+  {nome:"Mãe Muleva", mesa:"Mesa 4", categoria:"Igreja"},
+
+  // MESA 5 — Amigos
+  {nome:"Zarrito", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Namorada de Zarrito", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Filipe Baltazar", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Puto Baltazar", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Puto Baltazar", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Raul Meque", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Paulo Sozinho", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Ilda Paulo", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Pedro Sozinho", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Pedro", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Josué só Gospel", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Josué", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Mutepa", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Ju Mutepa", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Florindo Marecha", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Florindo", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Viola", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Viola", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Jorge Afinda", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Jorge", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Flex", mesa:"Mesa 5", categoria:"Amigos"},
+  {nome:"Esposa Flex", mesa:"Mesa 5", categoria:"Amigos"},
+
+  // MESA 6 — Colegas
+  {nome:"Donaldo Dias", mesa:"Mesa 6", categoria:"Colegas"},
+  {nome:"Maria Donaldo", mesa:"Mesa 6", categoria:"Colegas"},
+  {nome:"Yara de Clara", mesa:"Mesa 6", categoria:"Colegas"},
+  {nome:"Sandulane Bascolo", mesa:"Mesa 6", categoria:"Colegas"},
+  {nome:"Antónia Bascolo", mesa:"Mesa 6", categoria:"Colegas"},
+
+  // MC
+  {nome:"Ábias Muleva", mesa:"MC", categoria:"Mestre de Cerimónias"},
+  {nome:"Rogério", mesa:"MC", categoria:"Mestre de Cerimónias"}
+
+];
+
+function normalizar(texto) {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+const pesquisa = document.getElementById("pesquisa");
+const resultado = document.getElementById("resultado");
+
+pesquisa.addEventListener("input", function() {
+
+  const termo = normalizar(this.value);
+
+  if (termo.length < 2) {
+    resultado.innerHTML = "";
+    return;
+  }
+
+  const encontrados = convidados.filter(function(convidado) {
+    return normalizar(convidado.nome).includes(termo);
+  });
+
+  if (encontrados.length === 0) {
+    resultado.innerHTML = `
+      <div class="not-found">
+        Não encontramos esse nome. ❤️<br>
+        Tente escrever novamente.
+      </div>
+    `;
+    return;
+  }
+
+  resultado.innerHTML = encontrados.map(function(convidado) {
+    return `
+      <div class="result-card">
+        <div class="guest-name">
+          ${convidado.nome}
+        </div>
+
+        <div class="mesa">
+          🎉 ${convidado.mesa}
+        </div>
+
+        <div class="categoria">
+          ${convidado.categoria}
+        </div>
+      </div>
+    `;
+  }).join("");
+
+});
+
+</script>
+
+</body>
+</html>
