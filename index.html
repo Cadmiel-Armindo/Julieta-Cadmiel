@@ -289,7 +289,6 @@ button:disabled {
     }
 }
 
-.mem-preview{margin:18px 0}.mem-preview h3{text-align:center;font:26px Georgia,serif;color:var(--vinho);margin:10px}.mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mem-grid img{width:100%;height:180px;object-fit:cover;border-radius:12px;border:1px solid var(--borda);display:block}.mem-link{display:block;text-align:center;margin:12px auto;color:var(--vinho);font-weight:bold;text-decoration:none}@media(max-width:500px){.mem-grid{grid-template-columns:repeat(2,1fr)}.mem-grid img{height:150px}}
 </style>
 </head>
 
@@ -330,8 +329,6 @@ button:disabled {
             <p>Reviva os momentos que ficaram para sempre.</p>
         </div>
     </div>
-
-    <section id="memPreview" class="card mem-preview"><h3>Momentos que ficam para sempre</h3><div id="memGrid" class="mem-grid"><div class="aviso">A carregar memórias...</div></div><a class="mem-link" href="./memorias/">Ver todo o Álbum de Memórias →</a></section>
 
     <div id="mesaArea" class="mesa-area">
     <button class="voltar" onclick="voltarPortal()">← Voltar às recordações</button>
@@ -398,8 +395,6 @@ button:disabled {
 
 
 <script>
-
-async function carregarMemoriasInicio(){var g=document.getElementById("memGrid");try{var r=await fetch(SUPABASE_URL+"/rest/v1/memorias_uploads?select=id,caminho,nome_original&status=eq.aprovado&order=created_at.desc&limit=6",{headers:{apikey:SUPABASE_KEY}});if(!r.ok)throw 0;var d=await r.json();g.innerHTML="";if(!d.length){g.innerHTML="<div class=\"aviso\">As fotografias aprovadas aparecerão aqui.</div>";return}d.forEach(function(x){var a=document.createElement("a");a.href="./memorias/";var isv=/\.(mp4|mov|webm)$/i.test(x.nome_original||x.caminho||"");if(isv){a.innerHTML="<div style=\"height:180px;border-radius:12px;background:#173b30;color:white;display:grid;place-items:center\">▶ Vídeo</div>"}else{var u=SUPABASE_URL+"/storage/v1/object/public/memorias-casamento/"+x.caminho;a.innerHTML="<img loading=\"lazy\" src=\""+u+"\" alt=\"Memória de Julieta e Cadmiel\">"}g.appendChild(a)})}catch(e){g.innerHTML="<div class=\"aviso erro\">Não foi possível carregar as fotografias.</div>"}}
 
 function abrirMesas(){document.getElementById("portal").style.display="none";document.getElementById("mesaArea").classList.add("open");}
 function voltarPortal(){document.getElementById("mesaArea").classList.remove("open");document.getElementById("portal").style.display="grid";document.getElementById("resultado").innerHTML="";}
@@ -740,7 +735,6 @@ function procurarMesa() {
 
 
         carregarLista();
-carregarMemoriasInicio();
 
         return;
 
@@ -1013,7 +1007,6 @@ INICIAR
 */
 
 carregarLista();
-carregarMemoriasInicio();
 
 </script>
 
