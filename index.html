@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Julieta & Cadmiel — Descubra a sua mesa</title>
+<title>Julieta & Cadmiel — As nossas memórias</title>
 
 <style>
 :root {
@@ -88,6 +88,9 @@ body {
     margin: auto;
     max-width: 650px;
 }
+
+/* PORTA DE ENTRADA */
+.portal{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}.portal-card{background:rgba(255,253,250,.98);border:1px solid var(--borda);border-radius:20px;padding:25px 20px;text-align:center;box-shadow:0 15px 40px rgba(80,50,30,.10);cursor:pointer;transition:.2s}.portal-card:hover{transform:translateY(-2px);border-color:var(--dourado)}.portal-icon{font-size:34px}.portal-card h3{font:26px Georgia,serif;color:var(--vinho);margin:10px 0}.portal-card p{line-height:1.5;margin:0;color:#6d625b}.mesa-area{display:none}.mesa-area.open{display:block}.voltar{width:auto;background:transparent;color:var(--vinho);padding:7px 0;margin-bottom:12px;font-size:14px}
 
 /* CARTÃO */
 
@@ -271,7 +274,7 @@ button:disabled {
     color: #8e7d72;
 }
 
-@media(max-width:500px) {
+@media(max-width:500px) { .portal{grid-template-columns:1fr}
 
     .container {
         width: calc(100% - 20px);
@@ -307,23 +310,28 @@ button:disabled {
             ───── ♥ ─────
         </div>
 
-        <h2>
-            Descubra a sua mesa
-        </h2>
-
-        <p>
-            Digite o seu nome completo e
-            número de WhatsApp ou telefone.
-
-            Depois clique em
-            <strong>
-                “Procurar a minha mesa”
-            </strong>.
-        </p>
+        <h2>As nossas recordações</h2>
+        <p>Um lugar para regressar aos momentos, às pessoas e às memórias que tornaram este dia inesquecível.</p>
 
     </header>
 
 
+    <div id="portal" class="portal">
+        <div class="portal-card" onclick="abrirMesas()">
+            <div class="portal-icon">🪑</div>
+            <h3>Recorde a sua mesa</h3>
+            <p>Reveja onde e com quem partilhou este dia especial.</p>
+        </div>
+        <div class="portal-card" onclick="location.href='./memorias/'">
+            <div class="portal-icon">❤️</div>
+            <h3>Álbum de Memórias</h3>
+            <p>Reviva os momentos que ficaram para sempre.</p>
+        </div>
+    </div>
+
+    <div id="mesaArea" class="mesa-area">
+    <button class="voltar" onclick="voltarPortal()">← Voltar às recordações</button>
+    <header class="header" style="padding-top:0"><h2>Recorde a sua mesa</h2><p>Digite o seu nome completo e número de WhatsApp ou telefone.</p></header>
     <div class="card">
 
         <label for="nome">
@@ -371,6 +379,7 @@ button:disabled {
 
 
     <div id="resultado"></div>
+    </div>
 
 
     <div class="footer">
@@ -385,6 +394,9 @@ button:disabled {
 
 
 <script>
+
+function abrirMesas(){document.getElementById("portal").style.display="none";document.getElementById("mesaArea").classList.add("open");}
+function voltarPortal(){document.getElementById("mesaArea").classList.remove("open");document.getElementById("portal").style.display="grid";document.getElementById("resultado").innerHTML="";}
 
 /*
 ================================================
